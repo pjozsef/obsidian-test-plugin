@@ -12,7 +12,7 @@ export default class PromptWriter {
 
   async writePrompt(promptResult: PromptResult): Promise<boolean> {
     const file = await this.createFile(promptResult)
-    if(file) {
+    if (file) {
       const content = await this.app.vault.read(file)
       const replaced = content
         .replaceAll('((category))', promptResult.category)
@@ -31,38 +31,35 @@ export default class PromptWriter {
     const fileName = this.fileName(promptResult)
 
     const newFileExists = await this.app.vault.adapter.exists(fileName)
-    if(newFileExists){
+    if (newFileExists) {
       new Notice(`Note already exists: ${fileName}`)
       return
     }
 
-    const file = await this.copyFromTemplate(promptResult, fileName)
-    if (file) {
-      return file
-    } else {
-      return this.app.vault.create(fileName, promptResult.prompt)
+    const strategies = [
+      () => { return this.copyFromTemplate(promptResult, fileName, PromptType.SINGLE, 'singleTemplate') },
+      () => { return this.copyFromTemplate(promptResult, fileName, PromptType.DUAL, 'dualTemplate') },
+      () => { return this.app.vault.create(fileName, promptResult.prompt) },
+    ]
+
+    for(let strategy of strategies){
+      const result = await strategy()
+      if(result){
+        return result
+      }
     }
   }
 
-  async copyFromTemplate(promptResult: PromptResult, fileName: string): Promise<TFile | undefined> {
-    const singleResult = await this.copyFrom(promptResult, fileName, PromptType.SINGLE, 'singleTemplate')
-    if(singleResult){
-      return singleResult
-    } else {
-      return this.copyFrom(promptResult, fileName, PromptType.DUAL, 'dualTemplate')
-    }
-  }
-
-  async copyFrom(promptResult: PromptResult, fileName: string, type: PromptType, templateProperty: 'singleTemplate'|'dualTemplate'): Promise<TFile | undefined>  {
+  async copyFromTemplate(promptResult: PromptResult, fileName: string, type: PromptType, templateProperty: 'singleTemplate' | 'dualTemplate'): Promise<TFile | undefined> {
     const template = this.exportSettings[templateProperty]
 
     if (promptResult.type == type && template) {
       const templateExists = await this.app.vault.adapter.exists(template)
       if (templateExists) {
-          const file = this.app.vault.getAbstractFileByPath(template)
-          if (file && file instanceof TFile) {
-            return this.app.vault.copy(file, fileName)
-          }
+        const file = this.app.vault.getAbstractFileByPath(template)
+        if (file && file instanceof TFile) {
+          return this.app.vault.copy(file, fileName)
+        }
       } else {
         new Notice(`Template not found: ${template}`)
       }
