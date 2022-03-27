@@ -50,6 +50,13 @@ export default class TestModal extends Modal {
 
 			new Setting(contentEl)
 				.addButton(btn => btn
+					.setButtonText('Save for later')
+					.onClick(async (evt) => {
+
+					}))
+
+			new Setting(contentEl)
+				.addButton(btn => btn
 					.setButtonText('Create note!')
 					.setCta()
 					.onClick(async (evt) => {

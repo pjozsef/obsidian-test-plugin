@@ -30,6 +30,9 @@ export default class PromptProvider {
     const chosenCategory = this.randomElement(categories)
 
     return {
+      /////////////////////////////////////////////////////////
+      // todo https://github.com/rigoneri/indefinite-article.js
+      /////////////////////////////////////////////////////////
       prompt: `Tell me of a(n) [[${chosenCategory}]] that is related to [[${chosenElement.basename}]]`,
       category: chosenCategory,
       type: PromptType.SINGLE,
@@ -43,6 +46,9 @@ export default class PromptProvider {
     const chosenCategory = this.randomElement(categories)
 
     return {
+      ////////////////////////////////////////////////////////
+      //todo https://github.com/rigoneri/indefinite-article.js
+      ////////////////////////////////////////////////////////
       prompt: `Tell me of a(n) [[${chosenCategory}]] that connects [[${firstElement.basename}]] to [[${secondlement.basename}]]`,
       category: chosenCategory,
       type: PromptType.DUAL,

@@ -1,3 +1,7 @@
+## Title
+Plugin for game writers, worldbuilders and game masters.
+Helps with creating connections between already existing notes.
+
 ## Obsidian Sample Plugin
 
 This is a sample plugin for Obsidian (https://obsidian.md).
